@@ -1,2 +1,1 @@
-x = int(input())
-print(x**2)
+print(int(input())**2)
