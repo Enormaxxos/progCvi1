@@ -149,6 +149,8 @@ def solve(pos,path):
         if possibleSteps[i][0] == pos[0] and possibleSteps[i][1] == pos[1]:
             possibleMoves.append(possibleSteps[i])
 
+    possibleMoves.reverse()
+
     for i in range(len(possibleMoves)-1,-1,-1):
         vykresliCestu(path)
         a = solve((possibleMoves[i][2],possibleMoves[i][3]),path + [possibleMoves[i]])
