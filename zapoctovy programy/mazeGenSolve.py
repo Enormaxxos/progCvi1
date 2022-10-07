@@ -1,5 +1,4 @@
 from random import randrange
-from re import A
 from tkinter import Canvas
 from math import *
 
