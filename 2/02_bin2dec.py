@@ -1,12 +1,12 @@
 x = int(input())
+n = int(input())
 
-final = 0
-i = 0
+mocnina = 1
 
-while x != 0:
-    digit = x % 10
-    x = x // 10
-    final += digit * (2**i)
-    i += 1
+while n > 0:
+    if n % 2 == 1:
+        mocnina *= x
+    x = x**2
+    n = n//2
 
-print(str(final))
+print(mocnina)
