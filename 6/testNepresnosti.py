@@ -1,4 +1,4 @@
-n = 
+n = 6
 final = 0
 
 for i in range(n):
