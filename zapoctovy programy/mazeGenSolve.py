@@ -70,7 +70,7 @@ def removeWalls(sqA,sqB):
 
 ## SQUARE CLASS ##
 
-sqC = 12
+sqC = 25
 sqW = canvasWidth // sqC
 
 sqArr = []
