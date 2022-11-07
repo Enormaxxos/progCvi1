@@ -15,6 +15,11 @@ def josef(arr):
 
     return arr[0]
 
+
+def josef2(arr,index=1):
+    for i in range(index,len(arr),2):
+        pass
+
 if pocet < 1:
     print("ERROR")
 else:
