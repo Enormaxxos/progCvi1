@@ -40,11 +40,18 @@ class Matrix:
 
         return Matrix(finalList)
 
+    def fromLists(*matrixLists):
+        finalList = []
+        for l in matrixLists:
+            finalList.append(l)
+            
+        return Matrix(finalList)
+
     def from2DList(matrixList):
-        return Matrix("cba")
+        return Matrix(matrixList)
 
 
-a = Matrix.fromString("2&3&4@3&4&5@4&5&6")
+a = Matrix.fromLists([2,3,4],[3,4,5],[4,5,6])
 print(a.toString())
 
 
