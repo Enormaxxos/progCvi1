@@ -12,39 +12,61 @@ class Matrix:
             self.matrix.append([])
             self.matrix[i] = data[i][:]
 
-    def toString(self):
-        return self.matrix
+    def directory(self):
+        print(dir(self))
 
-    def add(self,other):
+    def toString(self,name=""):
+        final = f"\n-- Matrix '{name}'--\n"
+
+        for i in range(self.m):
+            row = ""
+            for j in range(self.n):
+                unit = self.matrix[i][j]
+                row += str(unit.numerator) if (unit.denominator == 1) else f"{unit.numerator}/{unit.denominator}"
+                row += " "
+
+            final += row[:-1] + "\n"
+
+        return final[:-1]
+
+    # ----MATH OPERATIONS----
+
+    def add(self,other,self_assign=True):
         if type(other) != Matrix:
             raise Exception("You can only add another matrix to this matrix.")
-        
+        if self.n != other.n or self.m != other.m:
+            raise Exception("Matrix addition is only defined for two matrices of the same size.")
 
+        if self_assign:
+            for row in range(self.m):
+                for col in range(self.n):
+                    self.matrix[row][col] += other.matrix[row][col]
+            return True
+        else:
+            final = []
+            for row in range(self.m):
+                final.append([])
 
+                for col in range(self.n):
+                    final.append(self.matrix[row][col] + other.matrix[row][col])
+            return final
+
+    # ----CONSTRUCTORS----
     @staticmethod
     def fromString(matrixString,rowSplitChar="@",colSplitChar="&"): # rowSplitChar = "@" colSplitChar = "&"
-
-        tolerance = 0.0001
 
         finalList = []
     
         rows = matrixString.split(rowSplitChar)
-        m = len(rows)
+        n = len(rows[0].split(colSplitChar))
 
         for i in range(len(rows)):
-            finalList.append([])
             units = rows[i].split(colSplitChar)
-            if i == 0:
-                n = len(units)
-            elif len(units) != n:
+
+            if len(units) != n:
                 raise Exception("All rows must have the same number of units.")
 
-            for j in range(len(units)):
-                fraction = Fraction(units[j])
-                if abs(float(fraction) - round(float(fraction))) < tolerance:
-                    finalList[i].append(round(fraction))
-                else:
-                    finalList[i].append(fraction)
+            finalList.append([Fraction(str(unit)).limit_denominator() for unit in units])
 
         return Matrix(finalList)
 
@@ -53,14 +75,10 @@ class Matrix:
         n = len(matrixLists[0])
 
         for lst in matrixLists:
-            appendingList = []
             if len(lst) != n:
                 raise Exception("All rows must have the same number of units.")
 
-            for unit in lst:
-                appendingList.append(Fraction(str(unit)).limit_denominator())
-
-            finalList.append(appendingList)
+            finalList.append([Fraction(str(unit)).limit_denominator() for unit in lst])
 
         return Matrix(finalList)
 
@@ -77,5 +95,21 @@ class Matrix:
 
         return Matrix(finalList)
 
+a = Matrix.fromString("2&3&4/5@4&9/4&3@3&4&5")
+b = Matrix.fromLists([2/3,4,5],[3,5,6])
+c = Matrix.from2DList([[2/3,4,5],[3,5,6]])
 
-    
+print(a.toString("a"))
+print(b.toString("b"))
+print(c.toString())
+
+input("...")
+print(f"b before = {b.toString()}")
+
+print(b.add(c))
+
+print(f"b after = {b.toString()}")
+
+input("...")
+
+a.directory()
