@@ -89,6 +89,7 @@ class Matrix:
         if type(val) == int:
             return self._constantMult(val)
         if type(val) == Matrix:
+            print(f"others[1][1]=", val.matrix[0][0])
             return self._matrixMult(val)
 
     # ----CONSTRUCTORS----
@@ -135,20 +136,16 @@ class Matrix:
 
         return Matrix(finalList)
 
-a = Matrix.fromLists([2/3,5],[5,6])
+a = Matrix.fromLists([16/3,40],[40,48])
 b = Matrix.from2DList([[4,5],[3,5]])
 
 input("_____________")
 
 print("a.toString()",a.toString())
+print("b.toString()",b.toString())
 
-c = a*8
-
-print('(a*8).toString()', c.toString())
 
 input("_____________")
 
-d = a*c
-print("(a*c).toString()",d.toString())
-
-print
+print("(a*b).toString()",(a*b).toString())
+print("(b*a).toString()",(b*a).toString())
