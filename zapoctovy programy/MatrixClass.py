@@ -1,5 +1,5 @@
 from fractions import Fraction
-from math import floor
+from math import floor,ceil
 
 class Matrix:
 
@@ -12,20 +12,30 @@ class Matrix:
             self.matrix.append([])
             self.matrix[i] = data[i][:]
 
-    def directory(self):
-        print(dir(self))
+    
 
-    def toString(self,name=""):
-        final = f"\n-- Matrix '{name}'--\n"
+    def toString(self):
+
+        def centerText(text,charCount):
+            textLen = len(text)
+            beforeSpacesCount = floor((charCount - textLen)/2)
+            afterSpacesCount = ceil((charCount - textLen)/2)
+            return beforeSpacesCount * " " + text + afterSpacesCount * " "
+
+        def beautifyUnit(unit):
+            return (str(unit.numerator) if unit.denominator == 1 else f"{unit.numerator}/{unit.denominator}")
+
+        final = f"\n-- Matrix --\n"
+
+        flatMatrix = [beautifyUnit(unit) for row in self.matrix for unit in row]
+        allUnitCharCount = len(max(flatMatrix,key=len))
 
         for i in range(self.m):
-            row = ""
+            row = "| "
             for j in range(self.n):
-                unit = self.matrix[i][j]
-                row += str(unit.numerator) if (unit.denominator == 1) else f"{unit.numerator}/{unit.denominator}"
-                row += " "
+                row += centerText(str(self.matrix[i][j]), allUnitCharCount) + " "
 
-            final += row[:-1] + "\n"
+            final += row[:-1] + " |\n"
 
         return final[:-1]
 
@@ -96,11 +106,11 @@ class Matrix:
         return Matrix(finalList)
 
 a = Matrix.fromString("2&3&4/5@4&9/4&3@3&4&5")
-b = Matrix.fromLists([2/3,4,5],[3,5,6])
+b = Matrix.fromLists([233/3123,4,5],[3,5,6])
 c = Matrix.from2DList([[2/3,4,5],[3,5,6]])
 
-print(a.toString("a"))
-print(b.toString("b"))
+print(a.toString())
+print(b.toString())
 print(c.toString())
 
 input("...")
@@ -112,4 +122,4 @@ print(f"b after = {b.toString()}")
 
 input("...")
 
-a.directory()
+print(a[2][3])
