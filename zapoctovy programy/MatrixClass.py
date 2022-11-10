@@ -85,19 +85,11 @@ class Matrix:
         
         return Matrix(final)
 
-
     def __mul__(self,val):
         if type(val) == int:
             return self._constantMult(val)
         if type(val) == Matrix:
             return self._matrixMult(val)
-
-
-
-
-        
-
-
 
     # ----CONSTRUCTORS----
     @staticmethod
