@@ -1,6 +1,13 @@
 from fractions import Fraction
 from math import floor,ceil
 
+# TODO:
+#     -rank
+#     -REF tvar
+#     -inverse
+#     -homogeneous solutions..?
+#     -non-homogeneous solutions..? (requires Vector class / 1 x self._m matrix)
+
 class Matrix:
 
     def __init__(self,data):
@@ -39,13 +46,13 @@ class Matrix:
 
         return final[:-1]
 
-    def __getitem__(self,indexTuple):# MATRIX[i{1,2,...,m},j{1,2,...,n}]
+    def __getitem__(self,indexTuple):# MATRIX[i,j] - tuple indexing
         i,j = indexTuple
         return self.matrix[i-1][j-1]
 
     # ----MATH OPERATIONS----
 
-    def add(self,other,self_assign=False):
+    def _add(self,other,self_assign=False):
         if type(other) != Matrix:
             raise Exception("You can only add another matrix to this matrix.")
         if self._n != other._n or self._m != other._m:
@@ -66,7 +73,7 @@ class Matrix:
             return final
 
     def __add__(self,other): # MATRIX+MATRIX
-        return self.add(other)
+        return self._add(other)
 
     def _constantMult(self,val):
         newMatrix = []
@@ -94,7 +101,7 @@ class Matrix:
         
         return Matrix(final)
 
-    def __mul__(self,val): # 8*MATRIX / MATRIX*MATRIX
+    def __mul__(self,val): # n*MATRIX / MATRIX*MATRIX
         if type(val) == int or type(val) == float:
             return self._constantMult(Fraction(val).limit_denominator())
         if type(val) == Matrix:
