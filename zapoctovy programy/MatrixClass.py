@@ -105,7 +105,6 @@ class Matrix:
         if type(val) == int or type(val) == float:
             return self._constantMult(Fraction(val).limit_denominator())
         if type(val) == Matrix:
-            print(f"others[1][1]=", val.matrix[0][0])
             return self._matrixMult(val)
 
     def _transposed(self):
