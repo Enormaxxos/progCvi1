@@ -1,9 +1,19 @@
+import os
 from fractions import Fraction
-from math import floor, ceil
+from math import ceil, floor
 
 # TODO:
-#     -rank
-#     -REF tvar
+#     -fromString constructor (&,@) - DONE
+#     -from2darray constructor - DONE
+#     -fromArrays constructor - DONE
+#     -fromInput interactive constructor - DONE
+#     -toString() pretty-print - DONE   
+#     -matrix + matrix (addition) - DONE (plus sign)
+#     -matrix * n (constant multiplication) - DONE (asterisk sign)
+#     -matrix * matrix (matrix multiplication) - DONE (asterisk sign)
+#     -transposition - DONE (tilde sign, unar)
+#     -REF tvar - DONE
+#     -rank - DONE
 #     -inverse
 #     -homogeneous solutions..?
 #     -non-homogeneous solutions..? (requires Vector class / 1 x self._m matrix)
@@ -12,17 +22,21 @@ from math import floor, ceil
 class Matrix:
 
     def __init__(self, data):
+        """Do NOT use. Use one of the constructors instead. (from2DList(),fromLists(),fromString(),fromInput())"""
         self.matrix = []
         self._m = len(data)
         self._n = len(data[0])
         self.transposed = False
+        self._rank = -1
 
         for i in range(len(data)):
             self.matrix.append([])
             self.matrix[i] = data[i][:]
 
-    def toString(self):
+    # region ----FUNCTIONS----
 
+    def toString(self):
+        """Pretty-prints the Matrix"""
         def centerText(text, charCount):
             textLen = len(text)
             beforeSpacesCount = floor((charCount - textLen)/2)
@@ -47,11 +61,91 @@ class Matrix:
 
         return final[:-1]
 
+    def rank(self):
+        if self._rank == -1:
+            self.ref()
+
+        return self._rank
+
     def __getitem__(self, indexTuple):  # MATRIX[i,j] - tuple indexing
+        """Matrix[i,j] -> Fraction/int on [i,j]th index """
         i, j = indexTuple
+        if i > self._m or j > self._n:
+            raise IndexError("Index of matrix is out of range.")
+
         return self.matrix[i-1][j-1]
 
-    # ----MATH OPERATIONS----
+    def ref(self):
+
+        def findFirstNonZeroUnit(row):
+            for i in range(len(row)):
+                if row[i] != 0:
+                    return i
+            return len(row)
+
+        newMatrix = []
+        jDict = dict()
+        for row in self.matrix:
+            index = findFirstNonZeroUnit(row)
+            try:
+                jDict[index].append(row)
+            except KeyError:
+                jDict[index] = []
+                jDict[index].append(row)
+
+        for key in range(0, self._n):
+            try:
+                rowCount = len(jDict[key])
+            except KeyError:
+                continue
+            while rowCount > 1:
+                rowOne = jDict[key][0]
+                rowTwo = jDict[key][1]
+
+                rowOneFirstNum = rowOne[key]
+                rowTwoFirstNum = rowTwo[key]
+
+                if rowOneFirstNum < 0:
+                    rowOneFirstNum *= -1
+                    rowTwoFirstNum *= -1
+
+                coef = Fraction(-rowTwoFirstNum /
+                                rowOneFirstNum).limit_denominator()
+
+                multipliedRowOne = [(rowOneUnit * coef)
+                                    for rowOneUnit in rowOne]
+
+                newRowTwo = []
+                for i in range(len(rowTwo)):
+                    newRowTwo.append(rowTwo[i] + multipliedRowOne[i])
+
+                jDict[key].pop(1)
+
+                newIndex = findFirstNonZeroUnit(newRowTwo)
+
+                try:
+                    jDict[newIndex].append(newRowTwo)
+                except KeyError:
+                    jDict[newIndex] = []
+                    jDict[newIndex].append(newRowTwo)
+
+                rowCount = len(jDict[key])
+
+        sortedKeys = sorted(jDict.keys())
+        self._rank = len(sortedKeys)
+        if self._n in sortedKeys:
+            self._rank -= 1
+        for key in sortedKeys:
+            for row in jDict[key]:
+                newMatrix.append(row)
+
+        returningMatrix = Matrix(newMatrix)
+        returningMatrix._rank = self._rank
+        return returningMatrix
+
+    # endregion
+
+    # region ----MATH OPERATIONS----
 
     def _add(self, other, self_assign=False):
         if type(other) != Matrix:
@@ -76,6 +170,7 @@ class Matrix:
             return final
 
     def __add__(self, other):  # MATRIX+MATRIX
+        """"""
         return self._add(other)
 
     def _constantMult(self, val):
@@ -130,6 +225,8 @@ class Matrix:
     def __invert__(self):  # tilde(~)MATRIX - calls _transposed - Transposes Matrix
         return self._transposed()
 
+    # endregion
+
     # ----CONSTRUCTORS----
 
     @staticmethod
@@ -152,6 +249,7 @@ class Matrix:
 
         return Matrix(finalList)
 
+    @staticmethod
     def fromLists(*matrixLists):
         finalList = []
         n = len(matrixLists[0])
@@ -165,6 +263,7 @@ class Matrix:
 
         return Matrix(finalList)
 
+    @staticmethod
     def from2DList(matrixList):
         finalList = []
         n = len(matrixList[0])
@@ -179,6 +278,7 @@ class Matrix:
 
         return Matrix(finalList)
 
+    @staticmethod
     def fromInput():  # unlike other constructors requires user input
         print("Use ampersand (&) as a unit separator between columns. \nWhen you finish inputting row, hit ENTER. \nWhen you finish inputting matrix, leave row empty and hit ENTER.")
         colSeparator = '&'
@@ -205,18 +305,29 @@ class Matrix:
         return Matrix(finalList)
 
 
-# a = Matrix.fromLists([16/3,50],[40,48])
-# b = Matrix.from2DList([[4,5],[3,5]])
+# a = Matrix.from2DList([[3, 4, 3], [2, 4, 4], [1, 2, 2]])
+# os.system("cls||clear")
+# print("default matrix A")
 
-# input("_____________")
+# print(a.toString())
 
-# print("a.toString()",a.toString())
-# print("b.toString()",b.toString())
+# input("...")
+# # os.system("cls||clear")
+# print("A in REF")
+
+# print(a.ref().toString())
+
+# input("...")
+# # os.system("cls||clear")
+
+# print("rank(A)")
+
+# print(a.rank())
+
+# input("...")
+# # os.system("cls||clear")
 
 
-# input("_____________")
-
-# i = int(input("i="))
-# j = int(input("j="))
-
-# print(f"a[{i},{j}]", a[i,j])
+# aT = ~a
+# print("(A)T")
+# print(aT.toString())
