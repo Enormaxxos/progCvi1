@@ -12,7 +12,6 @@ possibleSteps = []
 
 ## SQUARE CLASS ##
 
-
 class Square:
     def __init__(self, x, y, w, i, j):
         self.x, self.y, self.w, self.i, self.j = x, y, w, i, j
@@ -78,7 +77,7 @@ def removeWalls(sqA, sqB):
 
 ## SQUARE CLASS ##
 
-sqC = 25
+sqC = 16
 sqW = canvasWidth // sqC
 
 sqArr = []
