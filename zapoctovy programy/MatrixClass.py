@@ -17,6 +17,7 @@ from math import ceil, floor
 #     -inverse
 #     -homogeneous solutions..?
 #     -non-homogeneous solutions..? (requires Vector class / 1 x self._m matrix)
+#     - item assignement
 
 
 class Matrix:
@@ -27,7 +28,9 @@ class Matrix:
         self._m = len(data)
         self._n = len(data[0])
         self.transposed = False
+        self._inversed = None
         self._rank = -1
+        self._ref = None
 
         for i in range(len(data)):
             self.matrix.append([])
@@ -43,7 +46,10 @@ class Matrix:
             afterSpacesCount = ceil((charCount - textLen)/2)
             return beforeSpacesCount * " " + text + afterSpacesCount * " "
 
-        final = f"\n-- Matrix --\n"
+        if self.matrix == self._ref:
+            final = "\n-- Matrix (REF) --\n"
+        else:
+            final = "\n-- Matrix --\n"
 
         flatMatrix = [str(unit) for row in self.matrix for unit in row]
         allUnitCharCount = len(max(flatMatrix, key=len))
@@ -62,6 +68,7 @@ class Matrix:
         return final[:-1]
 
     def rank(self):
+
         if self._rank == -1:
             self.ref()
 
@@ -75,7 +82,10 @@ class Matrix:
 
         return self.matrix[i-1][j-1]
 
-    def ref(self):
+    def refOld(self):
+
+        if self._ref != None:
+            return Matrix(self._ref)
 
         def findFirstNonZeroUnit(row):
             for i in range(len(row)):
@@ -83,6 +93,7 @@ class Matrix:
                     return i
             return len(row)
 
+        # najdi na kazdym radku prvni nenulovou vec, podle sloupce ho jebni do jDict
         newMatrix = []
         jDict = dict()
         for row in self.matrix:
@@ -93,17 +104,24 @@ class Matrix:
                 jDict[index] = []
                 jDict[index].append(row)
 
+        # projed kazdej sloupec
         for key in range(0, self._n):
             try:
+                # spocitej kolik je radku s takovym pivotem
                 rowCount = len(jDict[key])
             except KeyError:
                 continue
             while rowCount > 1:
+                # pokud vic nez jeden, pickni dva
                 rowOne = jDict[key][0]
                 rowTwo = jDict[key][1]
 
+                #pickni jejich pivoty
+
                 rowOneFirstNum = rowOne[key]
                 rowTwoFirstNum = rowTwo[key]
+
+
 
                 if rowOneFirstNum < 0:
                     rowOneFirstNum *= -1
@@ -139,9 +157,52 @@ class Matrix:
             for row in jDict[key]:
                 newMatrix.append(row)
 
+        self._ref = newMatrix
         returningMatrix = Matrix(newMatrix)
         returningMatrix._rank = self._rank
+        returningMatrix._ref = newMatrix
+        
         return returningMatrix
+
+    def WIP_refNew(self):
+
+        if self._ref != None:
+            return Matrix(self._ref)
+
+        def findFirstNonZeroUnit(row):
+            for i in range(len(row)):
+                if row[i] != 0:
+                    return i
+            return len(row)
+
+        unitMatrix = []
+        for i in range(self._m):
+            unitMatrix.append([])
+            for j in range(self._n):
+                unitMatrix[i].append(0)
+
+        for i in range(self._m):
+            unitMatrix[i][i] = 1
+
+        pivotDict = dict()
+
+
+
+
+
+    def inversed(self):
+
+        if self._m != self._n:
+            raise Exception("Inversed matrix is defined only for square matrices.")
+
+        if not self._ref: self.ref()         
+   
+        if self._rank != self._m:
+            raise Exception("This matrix is singular, inverse matrix doesn't exist.")
+
+        
+        
+        
 
     # endregion
 
@@ -167,7 +228,7 @@ class Matrix:
                 for col in range(self._n):
                     final.append(self.matrix[row]
                                  [col] + other.matrix[row][col])
-            return final
+            return Matrix(final)
 
     def __add__(self, other):  # MATRIX+MATRIX
         """"""
