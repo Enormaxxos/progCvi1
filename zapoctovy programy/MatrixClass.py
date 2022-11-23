@@ -7,14 +7,14 @@ from math import ceil, floor
 #     -from2darray constructor - DONE
 #     -fromArrays constructor - DONE
 #     -fromInput interactive constructor - DONE
-#     -toString() pretty-print - DONE   
+#     -toString() pretty-print - DONE
 #     -matrix + matrix (addition) - DONE (plus sign)
 #     -matrix * n (constant multiplication) - DONE (asterisk sign)
 #     -matrix * matrix (matrix multiplication) - DONE (asterisk sign)
 #     -transposition - DONE (tilde sign, unar)
 #     -REF tvar - DONE
 #     -rank - DONE
-#     -inverse
+#     -inverse - DONE
 #     -homogeneous solutions..?
 #     -non-homogeneous solutions..? (requires Vector class / 1 x self._m matrix)
 #     - item assignement
@@ -46,10 +46,7 @@ class Matrix:
             afterSpacesCount = ceil((charCount - textLen)/2)
             return beforeSpacesCount * " " + text + afterSpacesCount * " "
 
-        if self.matrix == self._ref:
-            final = "\n-- Matrix (REF) --\n"
-        else:
-            final = "\n-- Matrix --\n"
+        final = "\n-- Matrix --\n"
 
         flatMatrix = [str(unit) for row in self.matrix for unit in row]
         allUnitCharCount = len(max(flatMatrix, key=len))
@@ -82,127 +79,157 @@ class Matrix:
 
         return self.matrix[i-1][j-1]
 
-    def refOld(self):
+    def ref(self, **kwargs):
 
-        if self._ref != None:
+        # pokud uz byla spocitana, a nezavola si to inverted(), vrat matici
+        if self._ref != None and "_invCall" not in kwargs.keys():
             return Matrix(self._ref)
 
         def findFirstNonZeroUnit(row):
             for i in range(len(row)):
                 if row[i] != 0:
                     return i
-            return len(row)
+            return None
 
-        # najdi na kazdym radku prvni nenulovou vec, podle sloupce ho jebni do jDict
-        newMatrix = []
-        jDict = dict()
-        for row in self.matrix:
-            index = findFirstNonZeroUnit(row)
-            try:
-                jDict[index].append(row)
-            except KeyError:
-                jDict[index] = []
-                jDict[index].append(row)
-
-        # projed kazdej sloupec
-        for key in range(0, self._n):
-            try:
-                # spocitej kolik je radku s takovym pivotem
-                rowCount = len(jDict[key])
-            except KeyError:
-                continue
-            while rowCount > 1:
-                # pokud vic nez jeden, pickni dva
-                rowOne = jDict[key][0]
-                rowTwo = jDict[key][1]
-
-                #pickni jejich pivoty
-
-                rowOneFirstNum = rowOne[key]
-                rowTwoFirstNum = rowTwo[key]
-
-
-
-                if rowOneFirstNum < 0:
-                    rowOneFirstNum *= -1
-                    rowTwoFirstNum *= -1
-
-                coef = Fraction(-rowTwoFirstNum /
-                                rowOneFirstNum).limit_denominator()
-
-                multipliedRowOne = [(rowOneUnit * coef)
-                                    for rowOneUnit in rowOne]
-
-                newRowTwo = []
-                for i in range(len(rowTwo)):
-                    newRowTwo.append(rowTwo[i] + multipliedRowOne[i])
-
-                jDict[key].pop(1)
-
-                newIndex = findFirstNonZeroUnit(newRowTwo)
-
-                try:
-                    jDict[newIndex].append(newRowTwo)
-                except KeyError:
-                    jDict[newIndex] = []
-                    jDict[newIndex].append(newRowTwo)
-
-                rowCount = len(jDict[key])
-
-        sortedKeys = sorted(jDict.keys())
-        self._rank = len(sortedKeys)
-        if self._n in sortedKeys:
-            self._rank -= 1
-        for key in sortedKeys:
-            for row in jDict[key]:
-                newMatrix.append(row)
-
-        self._ref = newMatrix
-        returningMatrix = Matrix(newMatrix)
-        returningMatrix._rank = self._rank
-        returningMatrix._ref = newMatrix
-        
-        return returningMatrix
-
-    def WIP_refNew(self):
-
-        if self._ref != None:
-            return Matrix(self._ref)
-
-        def findFirstNonZeroUnit(row):
-            for i in range(len(row)):
-                if row[i] != 0:
-                    return i
-            return len(row)
-
+        # vytvor jednotkovou matici stejneho radu
         unitMatrix = []
         for i in range(self._m):
             unitMatrix.append([])
             for j in range(self._n):
-                unitMatrix[i].append(0)
+                unitMatrix[i].append(Fraction(0, 1))
 
         for i in range(self._m):
-            unitMatrix[i][i] = 1
+            unitMatrix[i][i] = Fraction(1, 1)
 
-        pivotDict = dict()
+        # zkopiruj si data matice do temporary var, aby se neupravovaly data na hlavni neznamy matice
+        temp = []
+        for row in self.matrix:
+            temp.append(row[:])
 
+        looping = True
 
+        # opakuj dokud existujou aspon dva radky na jakymkoliv pivotu
+        while looping:
+            looping = False
+            pivots = dict()  # {j s pivotem : i radku}
 
+            for i in range(self._m):
+                rowPivotIndex = findFirstNonZeroUnit(temp[i])
+                if rowPivotIndex == None:
+                    continue
 
+                try:
+                    pivots[rowPivotIndex].append(i)
+                except KeyError:
+                    pivots[rowPivotIndex] = []
+                    pivots[rowPivotIndex].append(i)
+
+            sortedPivots = sorted(pivots.keys())
+
+            for pivot in sortedPivots:
+                if len(pivots[pivot]) <= 1:
+                    continue
+
+                looping = True
+
+                rowOneIndex = pivots[pivot][0]
+                rowOne = temp[rowOneIndex][:]
+                unitMatrixRowOne = unitMatrix[rowOneIndex][:]
+                rowOnePivotVal = temp[rowOneIndex][pivot]
+
+                rowTwoIndex = pivots[pivot][1]
+                rowTwo = temp[rowTwoIndex][:]
+                unitMatrixRowTwo = unitMatrix[rowTwoIndex][:]
+                rowTwoPivotVal = temp[rowTwoIndex][pivot]
+
+                if rowOnePivotVal < 0:
+                    rowOnePivotVal *= -1
+                    rowTwoPivotVal *= -1
+
+                coef = Fraction(rowTwoPivotVal /
+                                rowOnePivotVal).limit_denominator()
+
+                multRowOne = [unit * coef for unit in rowOne]
+                multUnitMatrixRowOne = [
+                    unit * coef for unit in unitMatrixRowOne]
+
+                subtrRowTwo = [rowTwo[i] - multRowOne[i]
+                               for i in range(len(rowTwo))]
+                subtrUnitMatrixRowTwo = [
+                    unitMatrixRowTwo[i] - multUnitMatrixRowOne[i] for i in range(len(unitMatrixRowTwo))]
+
+                temp[rowTwoIndex] = subtrRowTwo
+                unitMatrix[rowTwoIndex] = subtrUnitMatrixRowTwo
+
+        self._rank = len(pivots)
+        self._ref = temp
+
+        if '_invCall' not in kwargs.keys():
+            newMatrix = Matrix(temp)
+            newMatrix._rank = self._rank
+            newMatrix._ref = self._ref
+            # newMatrix._canBe
+            return newMatrix
+        else:
+            return temp, unitMatrix
 
     def inversed(self):
 
+        if self._inversed != None:
+            return Matrix(self._inversed)
+
         if self._m != self._n:
-            raise Exception("Inversed matrix is defined only for square matrices.")
+            raise Exception(
+                "Inversed matrix is defined only for square matrices.")
 
-        if not self._ref: self.ref()         
-   
+        mainMatrix, invMatrix = self.ref(_invCall=True)
+
+        mainMatrix = mainMatrix.copy()
+        mainMatrix = [row.copy() for row in mainMatrix]
+
         if self._rank != self._m:
-            raise Exception("This matrix is singular, inverse matrix doesn't exist.")
+            raise Exception(
+                "This matrix is singular, inverse matrix doesn't exist.")
 
-        
-        
-        
+        for i in range(len(mainMatrix)-1, -1, -1):
+            for j in range(i-1, -1, -1):
+                rowDown = mainMatrix[i][:]
+                invRowDown = invMatrix[i][:]
+
+                rowUp = mainMatrix[j][:]
+                invRowUp = invMatrix[j][:]
+
+                rowUpVal = rowUp[i]
+                rowDownVal = rowDown[i]
+
+                if rowDownVal < 0:
+                    rowDownVal *= -1
+                    rowUpVal *= -1
+
+                coef = Fraction(rowUpVal / rowDownVal).limit_denominator()
+
+                multRowDown = [unit * coef for unit in rowDown]
+                multInvRowDown = [unit * coef for unit in invRowDown]
+
+                subtrRowUp = [rowUp[pos] - multRowDown[pos]
+                              for pos in range(len(rowUp))]
+                subtrInvRowUp = [invRowUp[pos] - multInvRowDown[pos]
+                                 for pos in range(len(invRowUp))]
+
+                mainMatrix[j] = subtrRowUp # TENHLE RADEK FUCKUPUJE SELF._REF. stejnej pointer, zkopirovat listy, zmenit adresy
+                invMatrix[j] = subtrInvRowUp
+
+
+            coef = mainMatrix[i][i]
+
+            mainMatrix[i][i] = Fraction(
+                mainMatrix[i][i] / coef).limit_denominator()
+            invMatrix[i] = [invMatrix[i][pos] *
+                            (1/coef) for pos in range(len(invMatrix[i]))]
+
+        self._inversed = invMatrix
+
+        return Matrix(invMatrix)
 
     # endregion
 
@@ -262,7 +289,7 @@ class Matrix:
         return Matrix(final)
 
     def __mul__(self, val):  # n*MATRIX / MATRIX*MATRIX
-        if type(val) == int or type(val) == float:
+        if type(val) == int or type(val) == float or type(val) == Fraction:
             return self._constantMult(Fraction(val).limit_denominator())
         if type(val) == Matrix:
             return self._matrixMult(val)
@@ -347,6 +374,8 @@ class Matrix:
         finalList = []
 
         row = input()
+        if len(row) == 0:
+            raise Exception("Aborting, no data given")
         rowSplit = row.split(colSeparator)
         n = len(rowSplit)
         finalList.append([Fraction(unit) for unit in rowSplit])
@@ -366,29 +395,20 @@ class Matrix:
         return Matrix(finalList)
 
 
-# a = Matrix.from2DList([[3, 4, 3], [2, 4, 4], [1, 2, 2]])
-# os.system("cls||clear")
-# print("default matrix A")
+a = Matrix.fromString("2&3&4@4&4&5@4&5&6")
+print(a.toString())
 
-# print(a.toString())
+input("...")
 
-# input("...")
-# # os.system("cls||clear")
-# print("A in REF")
+aRef = a.ref()
+print(aRef.toString())
 
-# print(a.ref().toString())
+input("...")
 
-# input("...")
-# # os.system("cls||clear")
+aInv = a.inversed()
+print(aInv.toString())
 
-# print("rank(A)")
+input("...")
 
-# print(a.rank())
-
-# input("...")
-# # os.system("cls||clear")
-
-
-# aT = ~a
-# print("(A)T")
-# print(aT.toString())
+aRefAgane = a.ref()
+print(aRefAgane.toString())
