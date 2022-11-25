@@ -5,7 +5,6 @@ directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 destroyedTiles = []
 dots = []
 
-
 def biggestCave(map):
     final = dict()
 
@@ -15,21 +14,21 @@ def biggestCave(map):
     def recursiveCave(map, pos):
         dots["notDone"].remove(pos)
         dots["done"].append(pos)
+        dots["dict"][(pos[0],pos[1])] = "done"
         destroyedTiles.append(pos)
 
         possibleMoves = []
 
-        for i in range(len(dots["notDone"])):
-            for d in directions:
-                if pos[0] + d[0] == dots["notDone"][i][0] and pos[1] + d[1] == dots["notDone"][i][1]:
-                    possibleMoves.append(dots["notDone"][i])
-            # if math.sqrt((dots["notDone"][i][0]-pos[0])**2 + (dots["notDone"][i][1]-pos[1])**2) == 1:
-            #     possibleMoves.append(dots["notDone"][i])
-
-        # print(f"On pos={pos}, possibleMoves are {possibleMoves}")
+        for d in directions:
+            try:
+                newDot = dots["dict"][(pos[0]+d[0],pos[1]+d[1])]
+            except KeyError:
+                continue
+            if newDot == "notDone":
+                possibleMoves.append((pos[0]+d[0],pos[1]+d[1]))
 
         for posMove in possibleMoves:
-            if posMove not in dots["done"]:
+            if dots["dict"][(posMove[0],posMove[1])] == "notDone":
                 recursiveCave(map, posMove)
 
     while len(dots["notDone"]) > 0:
@@ -46,20 +45,22 @@ def biggestCave(map):
 
         destroyedTiles.clear()
 
-    # print(f"vsechny jeskyne = {final}")
+    returning = max(final)
 
-    return max(final), final[max(final)][0], final[max(final)][1]
+    return returning, final[returning][0], final[returning][1]
 
 
 def findAllPoints(map):
     ptsList = dict()
     ptsList["notDone"] = []
     ptsList["done"] = []
+    ptsList["dict"] = dict()
 
     for i in range(len(map)):
         for j in range(len(map[i])):
             if map[i][j] == ".":
                 ptsList["notDone"].append((i, j))
+                ptsList["dict"][(i,j)] = "notDone"
 
     return ptsList
 
@@ -74,3 +75,19 @@ def inputHandler():
 
 
 print(*inputHandler())
+
+# ....###.##.###
+# ..##....##..##
+# .##..##....###
+# .#..##.....###
+# .#######..####
+# .##..###.##..#
+# ###..#####...#
+
+# .###..
+# ...#..
+# ##.###
+# .#....
+# ..####
+# .#....
+
