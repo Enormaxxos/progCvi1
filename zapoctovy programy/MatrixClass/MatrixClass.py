@@ -2,8 +2,7 @@ import os
 from fractions import Fraction
 from math import ceil, floor
 
-# TODO:
-#     -fromString constructor (&,@) - DONE
+#     -fromString constructor (& for columns, @ for rows) - DONE
 #     -from2darray constructor - DONE
 #     -fromArrays constructor - DONE
 #     -fromInput interactive constructor - DONE
@@ -11,13 +10,14 @@ from math import ceil, floor
 #     -matrix + matrix (addition) - DONE (plus sign)
 #     -matrix * n (constant multiplication) - DONE (asterisk sign)
 #     -matrix * matrix (matrix multiplication) - DONE (asterisk sign)
-#     -transposition - DONE (tilde sign, unar)
+#     -transposition - mostly DONE (tilde sign, unar / Matrix.transposed() ... ?)
 #     -REF tvar - DONE
 #     -rank - DONE
 #     -inverse - DONE
-#     -homogeneous solutions..?
-#     -non-homogeneous solutions..? (requires Vector class / 1 x self._m matrix)
-#     - item assignement
+#     -TODO:determinant .. ?
+#     -TODO:huge bug testing
+#     -TODO:documentation
+#     -TODO:testing script .. ?
 
 
 class Matrix:
@@ -38,7 +38,7 @@ class Matrix:
 
     # region ----FUNCTIONS----
 
-    def toString(self):
+    def __str__(self):
         """Pretty-prints the Matrix"""
         def centerText(text, charCount):
             textLen = len(text)
@@ -216,9 +216,9 @@ class Matrix:
                 subtrInvRowUp = [invRowUp[pos] - multInvRowDown[pos]
                                  for pos in range(len(invRowUp))]
 
-                mainMatrix[j] = subtrRowUp # TENHLE RADEK FUCKUPUJE SELF._REF. stejnej pointer, zkopirovat listy, zmenit adresy
+                # TENHLE RADEK FUCKUPUJE SELF._REF. stejnej pointer, zkopirovat listy, zmenit adresy
+                mainMatrix[j] = subtrRowUp
                 invMatrix[j] = subtrInvRowUp
-
 
             coef = mainMatrix[i][i]
 
@@ -231,6 +231,34 @@ class Matrix:
 
         return Matrix(invMatrix)
 
+    def determinant(self):
+
+        if self._m != self._n:
+            raise Exception("Determinant is defined only for square matrices.")
+
+        def detRecursive(matrix):
+            if len(matrix) == 1:
+                return matrix[0][0]
+
+            final = 0
+
+            for i in range(len(matrix)):
+                newMatrix = []
+
+                for j in range(1,len(matrix)):
+                    newMatrix.append([])
+
+                    for k in range(len(matrix)):
+                        if k == i:
+                            continue
+
+                        newMatrix[j-1].append(matrix[j][k])
+
+                final += ((-1)**i) * matrix[0][i] * detRecursive(newMatrix)
+
+            return final
+
+        return detRecursive(self.matrix)
     # endregion
 
     # region ----MATH OPERATIONS----
@@ -395,20 +423,12 @@ class Matrix:
         return Matrix(finalList)
 
 
-a = Matrix.fromString("2&3&4@4&4&5@4&5&6")
-print(a.toString())
+a = Matrix.fromString("2&3&4@7&2&4@8&5&2")
+print(a)
 
 input("...")
 
-aRef = a.ref()
-print(aRef.toString())
+aDet = a.determinant()
+print("aDet =",aDet)
 
 input("...")
-
-aInv = a.inversed()
-print(aInv.toString())
-
-input("...")
-
-aRefAgane = a.ref()
-print(aRefAgane.toString())
