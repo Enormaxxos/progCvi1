@@ -14,10 +14,9 @@ from math import ceil, floor
 #     -REF tvar - DONE
 #     -rank - DONE
 #     -inverse - DONE
-#     -TODO:determinant .. ?
+#     -determinant - DONE
 #     -TODO:huge bug testing
-#     -TODO:documentation
-#     -TODO:testing script .. ?
+#     -TODO:documentation (.md file)
 
 
 class Matrix:
@@ -263,27 +262,22 @@ class Matrix:
 
     # region ----MATH OPERATIONS----
 
-    def _add(self, other, self_assign=False):
+    def _add(self, other):
         if type(other) != Matrix:
             raise Exception("You can only add another matrix to this matrix.")
         if self._n != other._n or self._m != other._m:
             raise Exception(
                 "Matrix addition is only defined for two matrices of the same size.")
 
-        if self_assign:
-            for row in range(self._m):
-                for col in range(self._n):
-                    self.matrix[row][col] += other.matrix[row][col]
-            return True
-        else:
-            final = []
-            for row in range(self._m):
-                final.append([])
+        final = []
+        for row in range(self._m):
+            final.append([])
 
-                for col in range(self._n):
-                    final.append(self.matrix[row]
-                                 [col] + other.matrix[row][col])
-            return Matrix(final)
+            for col in range(self._n):
+                final[row].append(self.matrix[row]
+                                [col] + other.matrix[row][col])
+        print(final)
+        return Matrix(final)
 
     def __add__(self, other):  # MATRIX+MATRIX
         """"""
@@ -423,12 +417,8 @@ class Matrix:
         return Matrix(finalList)
 
 
-a = Matrix.fromString("2&3&4@7&2&4@8&5&2")
-print(a)
+# a = Matrix.fromString("2&3&4@7&2&4@8&5&2")
 
-input("...")
+# c = a*5
 
-aDet = a.determinant()
-print("aDet =",aDet)
-
-input("...")
+# print(c)
