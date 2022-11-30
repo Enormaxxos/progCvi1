@@ -1,0 +1,1 @@
+[('pridat_za_nejvetsi', 'a', 3),('pridat_za_nejvetsi', 'policie', 4)]
