@@ -45,7 +45,7 @@ class Matrix:
             afterSpacesCount = ceil((charCount - textLen)/2)
             return beforeSpacesCount * " " + text + afterSpacesCount * " "
 
-        final = "\n-- Matrix --\n"
+        final = "-- Matrix --\n"
 
         flatMatrix = [str(unit) for row in self.matrix for unit in row]
         allUnitCharCount = len(max(flatMatrix, key=len))
@@ -62,6 +62,22 @@ class Matrix:
                 final += row[:-1] + f" |\n"
 
         return final[:-1]
+
+    def __eq__(self,other):
+        if self._m != other._m and self._n != other._n:
+            return False
+
+        final = True
+        for i in range(self._m):
+            for j in range(self._n):
+                if self.matrix[i][j] != other.matrix[i][j]:
+                    final = False
+                    c = False
+                    break
+            if not final:
+                break
+
+        return final
 
     def rank(self):
 
@@ -276,7 +292,6 @@ class Matrix:
             for col in range(self._n):
                 final[row].append(self.matrix[row]
                                 [col] + other.matrix[row][col])
-        print(final)
         return Matrix(final)
 
     def __add__(self, other):  # MATRIX+MATRIX
