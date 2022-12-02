@@ -17,11 +17,11 @@ class Masina:
 
         # print(vagon.naklad)
 
-        if self.posledni:
-            self.posledni.dalsi = vagon
-            self.posledni = self.posledni.dalsi
-            print("short way")
-            return True
+        # if self.posledni:
+        #     self.posledni.dalsi = vagon
+        #     self.posledni = self.posledni.dalsi
+        #     print("short way")
+        #     return True
 
         if self.dalsi == None:
             self.dalsi = vagon
@@ -69,8 +69,8 @@ class Masina:
 
         predNejvetsim, nejvetsi = self.najdiNejvetsi(True)
 
-        if nejvetsi.dalsi == None:
-            self.posledni = predNejvetsim
+        # if nejvetsi.dalsi == None:
+        #     self.posledni = predNejvetsim
 
         predNejvetsim.dalsi = nejvetsi.dalsi
 
@@ -84,8 +84,8 @@ class Masina:
 
         temp = nejvetsi.dalsi
         nejvetsi.dalsi = vagon
-        if temp == None:
-            self.posledni = nejvetsi.dalsi
+        # if temp == None:
+        #     self.posledni = nejvetsi.dalsi
         nejvetsi.dalsi.dalsi = temp
 
 class Vagon:
@@ -95,26 +95,26 @@ class Vagon:
         self.dalsi = dalsi
 
 
-# vlak = Masina()
+vlak = Masina()
 
-# def inputHandler(inputList):
-#     for instruction in inputList:
-#         whatDo = instruction[0]
-#         ofWhat = instruction[1]
-#         howMuch = instruction[2]
+def inputHandler(inputList):
+    for instruction in inputList:
+        whatDo = instruction[0]
+        ofWhat = instruction[1]
+        howMuch = instruction[2]
 
-#         try:
-#             if whatDo == "odebrat_nejvetsi":
-#                 vlak.odebrat_nejvetsi()
-#             else:
-#                 eval(f"vlak.{whatDo}(Vagon(ceho='{ofWhat}',kolik={howMuch}))")
-#         except AttributeError:
-#             print("ERROR")
-#             return
+        try:
+            if whatDo == "odebrat_nejvetsi":
+                vlak.odebrat_nejvetsi()
+            else:
+                eval(f"vlak.{whatDo}(Vagon(ceho='{ofWhat}',kolik={howMuch}))")
+        except AttributeError:
+            print("ERROR")
+            return
 
-#     print(vlak)
+    print(vlak)
 
-# inputHandler(eval(input()))
+inputHandler(eval(input()))
 
 # import random
 

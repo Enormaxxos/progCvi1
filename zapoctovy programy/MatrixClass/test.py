@@ -1,9 +1,20 @@
-a = [[1,2,3],[4,5,6],[7,8,9]]
+from MatrixClass import Matrix
 
-aCopy = []
-for row in a:
-    aCopy.append(row[:])
+a = Matrix.from2DList([[2,3],[3,4]])
+b = Matrix.from2DList([[4,6],[5,7]])
+const = 5
 
-a[1][2] = 777
-print(a)
-print(aCopy)
+aTimesConst = a * const
+abProd = a * b
+baProd = b * a
+
+print("Constant multiplication: ")
+print(aTimesConst)
+print("________")
+
+print("Product of both matrices: ")
+print(abProd)
+print("________")
+
+print("Product of both matrices in switched order: ")
+print(baProd)

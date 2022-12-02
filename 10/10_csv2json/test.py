@@ -12,24 +12,13 @@ args = parser.parse_args()
 
 data = []
 
-data["32"]
-
 with open(args.inF,'r') as o:
     reader = csv.reader(o, quotechar=args.sep)
 
     for line in reader:
         print(line)
-        newDict = {
-            "slovo": line[0],
-            "pocet_pismen": line[1],
-            "typy_pismen": {
-                "pocet_samohlasek" : line[2],
-                "pocet_souhlasek" : line[3],
-            },
-            "zacatek_konec": [line[4],line[5]]
-        }
 
-        data.append(newDict)
+        data.append(line)
 
 
 with open(args.outF,'w') as o:

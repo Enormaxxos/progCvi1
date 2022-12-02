@@ -38,7 +38,7 @@ Popisuje veškeré funkce, které třída umí, společně s jejich funkčností
       ```
   - <b>Matrix.from2DList( <i>2dList</i> )</b>
 
-      <p>Konstruktor má jediný povinný parametr, dvojrozměrný list.</p>
+      <p>Konstruktor má jediný parametr, dvojrozměrný list.</p>
 
       ```python
       from MatrixClass import Matrix
@@ -100,7 +100,7 @@ print()
 print("---")
 print()
 
-print("Pretty-print matice")
+print("Pretty-print matice:")
 print(A)
 
 ```
@@ -112,7 +112,7 @@ výpis raw dat:
 
 ---
 
-Pretty-print matice
+Pretty-print matice:
 -- Matrix --
 | 2 3 4 |
 | 3 4 5 |
@@ -121,7 +121,85 @@ Pretty-print matice
 
 <b>Matematické funkce</b>
 -------------------------
-- 
+- Ve třídě Matrix jsou implementovány funkce k základním operacím s maticemi.
+- Instance třídy Matrix je <b>immutable</b>(neměnná) -> čísla uložená v instanci není možné přenastavit.
+
+- <b>Porovnání</b>
+  - Pro zjištění rovnosti dvou matic užívá třída <b>( == )</b>, porovnávání (<,>,<=,>=) pro matice není definováno.
+  ```python
+    from MatrixClass import Matrix
+
+    a = Matrix.from2DList([[2,3],[3,4]])
+    b = Matrix.fromString([[4,6],[5,7]])
+
+    print(a == b)
+    ```
+    Výstup:
+    ```bash
+    False
+    ```
+
+
+- <b>Sčítání</b>
+  - Pro sečtení dvou matic užívá třída <b>znak (+)</b>
+  ```python
+    from MatrixClass import Matrix
+
+    a = Matrix.from2DList([[2,3],[3,4]])
+    b = Matrix.fromString([[4,6],[5,7]])
+
+    abSum = a + b
+    print(abSum)
+    ```
+    Výstup:
+    ```bash
+    -- Matrix --
+    | 6  9  |
+    | 8  11 |
+    ```
+
+- <b>Násobení</b>
+  - Pro vynásobení matice konstantou nebo vynásobení dvou matic užívá třída <b>znak ( * )</b>
+  ```python
+    from MatrixClass import Matrix
+
+    a = Matrix.from2DList([[2,3],[3,4]])
+    b = Matrix.from2DList([[4,6],[5,7]])
+    const = 5
+
+    aTimesConst = a * const
+    abProd = a * b
+    baProd = b * a
+
+    print("Constant multiplication: ")
+    print(aTimesConst)
+    print("________")
+
+    print("Product of both matrices: ")
+    print(abProd)
+    print("________")
+
+    print("Product of both matrices in switched order: ")
+    print(baProd)
+    ```
+    Výstup:
+    ```
+    Constant multiplication: 
+    -- Matrix --
+    | 10 15 |
+    | 15 20 |
+    ________
+    Product of both matrices: 
+    -- Matrix --
+    | 23 33 |
+    | 32 46 |
+    ________
+    Product of both matrices in switched order: 
+    -- Matrix --
+    | 26 36 |
+    | 31 43 |
+    ```
+
 
 
 
