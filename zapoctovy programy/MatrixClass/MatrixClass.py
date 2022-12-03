@@ -1,4 +1,3 @@
-import os
 from fractions import Fraction
 from math import ceil, floor
 
@@ -15,6 +14,7 @@ from math import ceil, floor
 #     -rank - DONE
 #     -inverse - DONE
 #     -determinant - DONE
+#     -FIXME: ref tvar nehaze nulovej tvar dolu
 #     -TODO:huge bug testing
 #     -TODO:documentation (.md file)
 
