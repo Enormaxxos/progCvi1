@@ -12,8 +12,6 @@ args = parser.parse_args()
 
 data = []
 
-data["32"]
-
 with open(args.inF,'r') as o:
     reader = csv.reader(o, quotechar=args.sep)
 
