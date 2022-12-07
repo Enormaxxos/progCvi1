@@ -14,7 +14,6 @@ from math import ceil, floor
 #     -rank - DONE
 #     -inverse - DONE
 #     -determinant - DONE
-#     -FIXME: ref tvar nehaze nulovej tvar dolu
 #     -TODO:huge bug testing
 #     -TODO:documentation (.md file)
 
@@ -106,15 +105,16 @@ class Matrix:
                     return i
             return None
 
-        # vytvor jednotkovou matici stejneho radu
-        unitMatrix = []
-        for i in range(self._m):
-            unitMatrix.append([])
-            for j in range(self._n):
-                unitMatrix[i].append(Fraction(0, 1))
+        # vytvor jednotkovou matici stejneho radu\
+        if self._n == self._m:
+            unitMatrix = []
+            for i in range(self._m):
+                unitMatrix.append([])
+                for j in range(self._n):
+                    unitMatrix[i].append(Fraction(0, 1))
 
-        for i in range(self._m):
-            unitMatrix[i][i] = Fraction(1, 1)
+            for i in range(self._m):
+                unitMatrix[i][i] = Fraction(1, 1)
 
         # zkopiruj si data matice do temporary var, aby se neupravovaly data na hlavni neznamy matice
         temp = []
@@ -149,12 +149,14 @@ class Matrix:
 
                 rowOneIndex = pivots[pivot][0]
                 rowOne = temp[rowOneIndex][:]
-                unitMatrixRowOne = unitMatrix[rowOneIndex][:]
+                if self._n == self._m:
+                    unitMatrixRowOne = unitMatrix[rowOneIndex][:]
                 rowOnePivotVal = temp[rowOneIndex][pivot]
 
                 rowTwoIndex = pivots[pivot][1]
                 rowTwo = temp[rowTwoIndex][:]
-                unitMatrixRowTwo = unitMatrix[rowTwoIndex][:]
+                if self._n == self._m:
+                    unitMatrixRowTwo = unitMatrix[rowTwoIndex][:]
                 rowTwoPivotVal = temp[rowTwoIndex][pivot]
 
                 if rowOnePivotVal < 0:
@@ -162,19 +164,42 @@ class Matrix:
                     rowTwoPivotVal *= -1
 
                 coef = Fraction(rowTwoPivotVal /
-                                rowOnePivotVal).limit_denominator()
+                                rowOnePivotVal)
 
                 multRowOne = [unit * coef for unit in rowOne]
-                multUnitMatrixRowOne = [
-                    unit * coef for unit in unitMatrixRowOne]
+                if self._n == self._m:
+                    multUnitMatrixRowOne = [
+                        unit * coef for unit in unitMatrixRowOne]
 
                 subtrRowTwo = [rowTwo[i] - multRowOne[i]
                                for i in range(len(rowTwo))]
-                subtrUnitMatrixRowTwo = [
-                    unitMatrixRowTwo[i] - multUnitMatrixRowOne[i] for i in range(len(unitMatrixRowTwo))]
+                if self._n == self._m:
+                    subtrUnitMatrixRowTwo = [
+                        unitMatrixRowTwo[i] - multUnitMatrixRowOne[i] for i in range(len(unitMatrixRowTwo))]
 
                 temp[rowTwoIndex] = subtrRowTwo
-                unitMatrix[rowTwoIndex] = subtrUnitMatrixRowTwo
+                if self._n == self._m:
+                    unitMatrix[rowTwoIndex] = subtrUnitMatrixRowTwo
+
+        #serad radky podle pivotu
+        pivots = dict()
+        for i in range(self._m):
+            rowPivotIndex = findFirstNonZeroUnit(temp[i])
+            if rowPivotIndex == None:
+                continue
+
+            try:
+                pivots[rowPivotIndex].append(temp[i])
+            except KeyError:
+                pivots[rowPivotIndex] = []
+                pivots[rowPivotIndex].append(temp[i])
+
+        sortedPivots = sorted(pivots)
+
+        temp = []
+        for pivot in sortedPivots:
+            for line in pivots[pivot]:
+                temp.append(line)
 
         self._rank = len(pivots)
         self._ref = temp
@@ -231,7 +256,6 @@ class Matrix:
                 subtrInvRowUp = [invRowUp[pos] - multInvRowDown[pos]
                                  for pos in range(len(invRowUp))]
 
-                # TENHLE RADEK FUCKUPUJE SELF._REF. stejnej pointer, zkopirovat listy, zmenit adresy
                 mainMatrix[j] = subtrRowUp
                 invMatrix[j] = subtrInvRowUp
 
@@ -239,8 +263,8 @@ class Matrix:
 
             mainMatrix[i][i] = Fraction(
                 mainMatrix[i][i] / coef).limit_denominator()
-            invMatrix[i] = [invMatrix[i][pos] *
-                            (1/coef) for pos in range(len(invMatrix[i]))]
+            invMatrix[i] = [(invMatrix[i][pos] *
+                            (1/coef)).limit_denominator() for pos in range(len(invMatrix[i]))]
 
         self._inversed = invMatrix
 
@@ -274,6 +298,7 @@ class Matrix:
             return final
 
         return detRecursive(self.matrix)
+    
     # endregion
 
     # region ----MATH OPERATIONS----
@@ -319,9 +344,10 @@ class Matrix:
         for i in range(self._m):
             final.append([])
             for j in range(other._n):
-                final[i].append(0)
+                final[i].append(Fraction(0,1))
                 for k in range(self._n):
                     final[i][j] += self.matrix[i][k] * other.matrix[k][j]
+                    final[i][j].limit_denominator()
 
         return Matrix(final)
 
@@ -431,9 +457,28 @@ class Matrix:
 
         return Matrix(finalList)
 
+    @staticmethod
+    def unit(n):
+        newMatrix = []
 
-# a = Matrix.fromString("2&3&4@7&2&4@8&5&2")
+        for i in range(n):
+            newMatrix.append([])
+            for j in range(n):
+                newUnit = Fraction(1,1) if i == j else Fraction(0,1)
+                newMatrix[i].append(newUnit)
 
-# c = a*5
+        return Matrix(newMatrix)
 
-# print(c)
+
+if __name__ == "__main__":
+    # A = Matrix.from2DList([[Fraction(0, 1), Fraction(16, 1), Fraction(7, 1)], [Fraction(19, 1), Fraction(2, 1), Fraction(19, 1)], [Fraction(3, 1), Fraction(19, 1), Fraction(4, 1)]])
+    # print(A)
+    # ARef = A.ref()
+    # print(ARef)
+
+    A = Matrix.unit(4)
+    print(A)
+
+    # A = Matrix.from2DList([[4,5,6],[3,4,5],[2,3,4]])
+    # ARef = A.ref()
+
