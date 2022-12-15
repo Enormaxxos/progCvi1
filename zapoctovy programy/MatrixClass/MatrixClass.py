@@ -14,7 +14,8 @@ from math import ceil, floor
 #     -rank - DONE
 #     -inverse - DONE
 #     -determinant - DONE
-#     -TODO:huge bug testing
+#     -FIXME:ref - swapping rows at the end -> swap also unit matrix rows
+#     -testing file - DONE
 #     -TODO:documentation (.md file)
 
 
@@ -93,6 +94,7 @@ class Matrix:
 
         return self.matrix[i-1][j-1]
 
+#     -FIXME:What the fuck is happening to [18,6,3],[3,1,13],[5,8,5]
     def ref(self, **kwargs):
 
         # pokud uz byla spocitana, a nezavola si to inverted(), vrat matici
@@ -246,7 +248,7 @@ class Matrix:
                     rowDownVal *= -1
                     rowUpVal *= -1
 
-                coef = Fraction(rowUpVal / rowDownVal).limit_denominator()
+                coef = Fraction(rowUpVal / rowDownVal)
 
                 multRowDown = [unit * coef for unit in rowDown]
                 multInvRowDown = [unit * coef for unit in invRowDown]
@@ -264,7 +266,11 @@ class Matrix:
             mainMatrix[i][i] = Fraction(
                 mainMatrix[i][i] / coef).limit_denominator()
             invMatrix[i] = [(invMatrix[i][pos] *
-                            (1/coef)).limit_denominator() for pos in range(len(invMatrix[i]))]
+                            (1/coef)) for pos in range(len(invMatrix[i]))]
+
+        for i in range(len(invMatrix)):
+            for j in range(len(invMatrix[i])):
+                invMatrix[i][j].limit_denominator()
 
         self._inversed = invMatrix
 
@@ -458,7 +464,7 @@ class Matrix:
         return Matrix(finalList)
 
     @staticmethod
-    def unit(n):
+    def createUnit(n):
         newMatrix = []
 
         for i in range(n):
@@ -471,14 +477,9 @@ class Matrix:
 
 
 if __name__ == "__main__":
-    # A = Matrix.from2DList([[Fraction(0, 1), Fraction(16, 1), Fraction(7, 1)], [Fraction(19, 1), Fraction(2, 1), Fraction(19, 1)], [Fraction(3, 1), Fraction(19, 1), Fraction(4, 1)]])
-    # print(A)
-    # ARef = A.ref()
-    # print(ARef)
+    A = Matrix.from2DList([[18,6,3],[3,1,13],[5,8,5]])
+    # AInv = A.inversed()
 
-    A = Matrix.unit(4)
-    print(A)
-
-    # A = Matrix.from2DList([[4,5,6],[3,4,5],[2,3,4]])
-    # ARef = A.ref()
+    B = Matrix.from2DList([[18,6,3],[5,8,5],[3,1,13]])
+    BInv = B.inversed()
 
