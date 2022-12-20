@@ -202,7 +202,7 @@ class Matrix:
         for i in range(self._m):
             rowPivotIndex = findFirstNonZeroUnit(temp[i])
             if rowPivotIndex == None:
-                continue
+                rowPivotIndex = float('inf')
 
             try:
                 pivots[rowPivotIndex].append(temp[i])
