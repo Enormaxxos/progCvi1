@@ -160,6 +160,7 @@ class Matrix:
                 # najdi hodnotu pivotu v hornim radku
                 rowOneIndex = pivots[pivot][0]
                 rowOne = temp[rowOneIndex][:]
+        finalList = []
                 if self._n == self._m:
                     unitMatrixRowOne = unitMatrix[rowOneIndex][:]
                 rowOnePivotVal = temp[rowOneIndex][pivot]
@@ -258,7 +259,7 @@ class Matrix:
         # po Gaussove eliminaci zacni provadet Gauss-Jordanovu eliminaci
         for i in range(len(mainMatrix)-1, -1, -1):
             for j in range(i-1, -1, -1):
-                # i-ty radek vynasob vhodnym koeficientem, odecti ho od kazdeho radku nad nim
+                # i-ty radek vynasob vhodnym koeficientem, odecti ho od kazdeho radku nad nim, zacni odspoda
                 rowDown = mainMatrix[i][:]
                 invRowDown = invMatrix[i][:]
 
