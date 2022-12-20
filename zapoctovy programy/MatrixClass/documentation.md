@@ -8,7 +8,7 @@ Popisuje veškeré funkce, které třída umí, společně s jejich funkčností
 
 <b>Konstruktory</b>
 -------------------
-- Funkce, které vytvoří instanci třídy Matice. Každá z nich vytvoří se stejnými daty datově identickou matici, liší se pouze ve způsobu zadání informací.
+- Funkce, které vytvoří instanci třídy Matice. Každá z nich se stejným vstupem vytvoří shodnou matici, liší se pouze ve způsobu zadání informací.
 
 - Každá z konstruktorů ohlásí chybu, pokud zjistí, že se ve všech řádcích neshoduje počet čísel.
 
@@ -92,31 +92,41 @@ Popisuje veškeré funkce, které třída umí, společně s jejich funkčností
 from MatrixClass import Matrix
 
 A = Matrix.from2DList([[2,3,4],[3,4,5],[4,5,6]])
+B = Matrix.from2DList([[234/657542,23],[534254/241236,1]])
 
 print("výpis raw dat:")
-print(A.matrix)
+print("A =",A.matrix)
+print("B =",B.matrix)
 
 print()
 print("---")
 print()
 
 print("Pretty-print matice:")
+print("Matrix A")
 print(A)
-
+print("Matrix B")
+print(B)
 ```
 Výstup:
 
 ```bash
 výpis raw dat:
-[[Fraction(2, 1), Fraction(3, 1), Fraction(4, 1)], [Fraction(3, 1), Fraction(4, 1), Fraction(5, 1)], [Fraction(4, 1), Fraction(5, 1), Fraction(6, 1)]]
+A = [[Fraction(2, 1), Fraction(3, 1), Fraction(4, 1)], [Fraction(3, 1), Fraction(4, 1), Fraction(5, 1)], [Fraction(4, 1), Fraction(5, 1), Fraction(6, 1)]]
+B = [[Fraction(117, 328771), Fraction(23, 1)], [Fraction(267127, 120618), Fraction(1, 1)]]
 
 ---
 
 Pretty-print matice:
+Matrix A
 -- Matrix --
 | 2 3 4 |
 | 3 4 5 |
 | 4 5 6 |
+Matrix B
+-- Matrix --
+|  117/328771        23       |
+| 267127/120618       1       |
 ```
 
 <b>Matematické funkce</b>
@@ -139,6 +149,28 @@ Pretty-print matice:
     False
     ```
 
+- <b>Indexování</b>
+  - Pro zjištění hodnoty na i,j-té pozici používá třída Matrix klasické indexování pomocí hranatých závorek <b>Matrix[i,j]</b>, kde <i>i</i> (od 0 do n-1) je řádek a <i>j</i> (od 0 do m-1) je sloupec hodnoty
+  ```python
+    from MatrixClass import Matrix
+
+    a = Matrix.from2DList([[54,23,665,234],[3,47,234,5],[8,3,239,123]])
+
+    print(a)
+
+    print()
+
+    print("Value on i=2,j=3 is equal to",a[2,3])
+    ```
+    Výstup:
+    ```bash
+    -- Matrix --
+    | 54  23  665 234 |
+    |  3  47  234  5  |
+    |  8   3  239 123 |
+
+    Value on i=2,j=3 is equal to 234
+    ```
 
 - <b>Sčítání</b>
   - Pro sečtení dvou matic užívá třída <b>znak (+)</b>
@@ -189,19 +221,111 @@ Pretty-print matice:
     | 10 15 |
     | 15 20 |
     ________
-    Product of both matrices: 
+    Product of matrices: 
     -- Matrix --
     | 23 33 |
     | 32 46 |
     ________
-    Product of both matrices in switched order: 
+    Product of matrices in switched order: 
     -- Matrix --
     | 26 36 |
     | 31 43 |
     ```
 
+<b>Maticové úpravy</b>
+----------------------
 
+- Ve třídě Matrix jsou implementovány následující funkce pro úpravu matice:
+- <b>Odstupňovaný tvar (REF - row echelon form)</b>
+  - <b>Matrix.ref()</b>
+    ```python
+    from MatrixClass import Matrix
 
+    A = Matrix.from2DList([[2,3,4],[3,4,5],[4,5,6]])
+    ARef = A.ref()
 
+    print(ARef)
+    ``` 
+    Výstup:
+    ```bash
+    -- Matrix --
+    |  2    3    4   |
+    |  0   -1/2  -1  |
+    |  0    0    0   |
+    ```
+  - S tím velmi související je funkce <b>Matrix.rank()</b>, která vrátí hodnost matice.
+    ```python
+    from MatrixClass import Matrix
 
+    A = Matrix.from2DList([[2,3,4],[3,4,5],[4,5,6]])
 
+    print("Rank of matrix A =",A.rank())
+    ``` 
+    Výstup:
+    ```bash
+    Rank of matrix A = 2
+    ``` 
+- <b>Inverzní matice</b>
+  - Po splnění následujících podmínek najde a vrátí matici inverzní k původní.
+    1. Matice je čtvercová
+    2. Matice je regulární (její hodnost = její řád)
+  - <b>Matrix.inversed()</b>
+  ```python
+    from MatrixClass import Matrix
+
+    A = Matrix.from2DList([[2,3,4],[4,4,5],[4,5,6]])
+
+    AInv = A.inversed()
+
+    AInvTimesA = AInv * A
+
+    print("Matrix A:")
+    print(A)
+
+    print("---")
+
+    print("Matrix AInv:")
+    print(AInv)
+
+    print("---")
+
+    print("both multiplied:")
+    print(AInvTimesA)
+    ``` 
+    Výstup:
+    ```bash
+    Matrix A:
+    -- Matrix --
+    | 2 3 4 |
+    | 4 4 5 |
+    | 4 5 6 |
+    ---
+    Matrix AInv:
+    -- Matrix --
+    | -1/2  1   -1/2 |
+    |  -2   -2   3   |
+    |  2    1    -2  |
+    ---
+    both multiplied:
+    -- Matrix --
+    | 1 0 0 |
+    | 0 1 0 |
+    | 0 0 1 |
+    ```
+- <b>Determinant</b>
+  - Spočítá a vrátí determinant pro zadanou čtvercovou matici
+  - <b>Matrix.determinant()</b>
+  ```python
+    from MatrixClass import Matrix
+
+    A = Matrix.from2DList([[2,3,4],[3,4,5],[4,5,6]]) # singular matrix
+    B = Matrix.from2DList([[2,3,4],[4,4,5],[4,5,6]]) # regular matrix
+    
+    print("Determinant of A =", A.determinant())
+    print("Determinant of B =", B.determinant())
+    ``` 
+    Výstup:
+    ```bash
+    Determinant of A = 0
+    Determinant of B = 2
+    ```
