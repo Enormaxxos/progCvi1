@@ -160,7 +160,6 @@ class Matrix:
                 # najdi hodnotu pivotu v hornim radku
                 rowOneIndex = pivots[pivot][0]
                 rowOne = temp[rowOneIndex][:]
-        finalList = []
                 if self._n == self._m:
                     unitMatrixRowOne = unitMatrix[rowOneIndex][:]
                 rowOnePivotVal = temp[rowOneIndex][pivot]
