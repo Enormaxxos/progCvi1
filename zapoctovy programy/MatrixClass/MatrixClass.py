@@ -217,8 +217,11 @@ class Matrix:
             for line in pivots[pivot]:
                 temp.append(line)
 
-        # nastav si na svou instanci rank podle poctu pivotu
-        self._rank = len(pivots) - len(pivots[float('inf')])
+        # nastav si na svou instanci rank podle poctu pivotu         
+        try:
+            self._rank = len(pivots) - len(pivots[float('inf')])
+        except KeyError:
+            self._rank = len(pivots)
         self._ref = temp
 
         # pokud si tuto funkci zavolal uzivatel, vrat pouze upravenou puvodni matici 
