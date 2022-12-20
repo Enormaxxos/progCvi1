@@ -217,7 +217,8 @@ class Matrix:
             for line in pivots[pivot]:
                 temp.append(line)
 
-        self._rank = len(pivots)
+        # nastav si na svou instanci rank podle poctu pivotu
+        self._rank = len(pivots) - len(pivots[float('inf')])
         self._ref = temp
 
         # pokud si tuto funkci zavolal uzivatel, vrat pouze upravenou puvodni matici 
@@ -531,8 +532,6 @@ class Matrix:
 
 
 if __name__ == "__main__":
-    A = Matrix.from2DList([[18, 6, 3], [3, 1, 13], [5, 8, 5]])
-    # AInv = A.inversed()
+    A = Matrix.from2DList([[2,3,4], [3, 4, 5], [4, 5, 6]])
+    print("rank of A =",A.rank())
 
-    B = Matrix.from2DList([[18, 6, 3], [5, 8, 5], [3, 1, 13]])
-    BInv = B.inversed()
