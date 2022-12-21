@@ -1,3 +1,6 @@
+# tests some MatrixClass functions
+# after tests dumps wrong answers to dump.txt (if needed)
+
 from MatrixClass import Matrix
 from fractions import Fraction
 import random
@@ -101,3 +104,4 @@ match args.whatToTest.lower():
         testDoubleTranspose(int(args.numberOfTests))
     case A:
         print("Keyword unknown. Use 'Inverse' or 'Trans'.")
+
